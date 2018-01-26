@@ -1,7 +1,8 @@
 import pygame
 from pygame.locals import *
 
-#screen is a square and dimensions should be a multiple of 25 
+#screen is a square and dimensions should be a multiple of scale Factor
+scaleFactor = 25
 screenSize = 800
 
 class Game:
@@ -9,6 +10,7 @@ class Game:
 	startX = 0
 	startY = 0
 	white = (255,255,255)
+	grey = (105,105,105)
 	black = (0,0,0)
 	red = (255,0,0)
 	green = (0,255,0)
@@ -18,7 +20,7 @@ class Game:
 	def __init__(self, width = 800, height = 800):
 		self.screenWidth = width
 		self.screenHeight = height
-		self.hero = Hero(self.startX, self.startY, self.screenWidth)
+		self.hero = Hero(self.startX, self.startY, self.screenWidth, scaleFactor)
 		self.clock = pygame.time.Clock()
 		self.gameDisplay = pygame.display.set_mode((self.screenWidth,self.screenHeight))
 	
@@ -39,19 +41,24 @@ class Game:
 	def drawScreen(self):
 		self.checkInput()
 		self.gameDisplay.fill(self.black)
+		self.drawGrid()
 		pygame.draw.rect(self.gameDisplay, self.green, self.hero.getCoordinates())
 		pygame.display.update()
 		self.clock.tick(self.FPS)
+		
+	def drawGrid(self):
+		for line in range(scaleFactor):
+			pygame.draw.line(self.gameDisplay, self.grey, (line*screenSize/scaleFactor, 0),(line*screenSize/scaleFactor, screenSize))
+			pygame.draw.line(self.gameDisplay, self.grey, (0, line*screenSize/scaleFactor),(screenSize, line*screenSize/scaleFactor))
 		
 	def exitGame(self):
 		pygame.quit()
 		quit()
 
 class Hero:
-	
-	scaleFactor = 25
-	
-	def __init__(self, startX, startY, screenSize):
+		
+	def __init__(self, startX, startY, screenSize, scale=25):
+		self.scaleFactor = scale
 		self.heroX = startX
 		self.heroY = startY
 		self.step = screenSize/self.scaleFactor
