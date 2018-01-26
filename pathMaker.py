@@ -27,8 +27,19 @@ class Tile:
 		
 	def getCoordinates(self):
 		return [self.tileX, self.tileY, self.width, self.height]
-	
-
+		
+	def getPath(self):
+		return self.safePath
+		
+	def mouseOver(self, mouseX, mouseY):
+		if mouseX >= self.tileX and mouseX <= self.width+ self.tileX and mouseY >= self.tileY and mouseY <= self.height + self.tileY:
+			return True
+		else:
+			return False
+			
+	def flipType(self):
+		self.safePath = not self.safePath
+			
 class Game:
 	FPS = 15
 	startX = 0
@@ -51,7 +62,8 @@ class Game:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				self.exitGame()
-
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				self.flipTiles(pygame.mouse.get_pos())
 					
 	def drawScreen(self):
 		self.checkInput()
@@ -61,9 +73,17 @@ class Game:
 		pygame.display.update()
 		self.clock.tick(self.FPS)
 		
+	def flipTiles(self, (mouseX, mouseY)):
+		for tile in self.tiles:
+			if tile.mouseOver(mouseX, mouseY):
+				tile.flipType()
+		
 	def drawTiles(self):
 		for tile in self.tiles:
-			pygame.draw.rect(self.gameDisplay, red, tile.getCoordinates())
+			if tile.getPath():
+				pygame.draw.rect(self.gameDisplay, white, tile.getCoordinates())
+			else:
+				pygame.draw.rect(self.gameDisplay, black, tile.getCoordinates())
 	
 	def drawGrid(self):
 		for line in range(scaleFactor):
