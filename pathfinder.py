@@ -97,7 +97,7 @@ class Game:
 		self.clock = pygame.time.Clock()
 		self.font = pygame.font.SysFont(None, int(self.unitSize*1.5))
 		self.gameDisplay = pygame.display.set_mode((self.screenWidth,self.screenHeight))
-		self.gameState = Game.CONTINUE
+		self.gameState = Game.GAMESTART
 		self.createTiles()
 		self.loadTiles(self.level)
 				
@@ -130,17 +130,20 @@ class Game:
 					elif event.key == K_r:
 						self.hero.reset()
 						self.gameState = Game.CONTINUE
+					elif event.key == K_SPACE:
+						self.gameState = Game.CONTINUE
 					
 	def drawScreen(self):
 		#------------------ Title Bar ---------------------#
 		self.gameDisplay.fill(black)
-		self.messageToScreen("Path Finder", cyan, -self.unitSize*3, -self.screenHeight/2)
+		self.messageToScreen("Path Finder", cyan, yOffset = -self.screenHeight/2+self.unitSize)
 		
 		#----------------- Intro Screen -------------------#
 		if self.gameState == Game.GAMESTART:
-			self.messageToScreen("Use W,A,S,D to navigate the path.", white, yOffset=-self.unitSize*5)
-			self.messageToScreen("Step on each tile of the path to win.", white, yOffset=-self.unitSize*4)
+			self.messageToScreen("Use W,A,S, and D to navigate the path", white, yOffset=-self.unitSize*5)
+			self.messageToScreen("Step on each tile of the path to win", white, yOffset=-self.unitSize*4)
 			self.messageToScreen("Don't fall off of  the path!", white, yOffset=-self.unitSize*3)
+			self.messageToScreen("Press SPACE to begin", white, yOffset=-self.unitSize*2)
 		
 		#------------------- Game Play --------------------#
 		elif self.gameState == Game.CONTINUE:
@@ -173,9 +176,11 @@ class Game:
 				
 		
 	def messageToScreen(self, msg, color, xOffset=0, yOffset=0):
-		screenText = self.font.render(msg, True, color)
-		self.gameDisplay.blit(screenText, [self.screenWidth/2 + xOffset, self.screenHeight/2+ yOffset])
-		
+		textSurf = self.font.render(msg,True, color)
+		textRect = textSurf.get_rect()
+		textRect.center = (self.screenWidth/2 + xOffset), (self.screenHeight/2 + yOffset)
+		self.gameDisplay.blit(textSurf, textRect)
+	
 	def createTiles(self):
 		for tile in range(scaleFactor*scaleFactor):
 			self.tiles.append(Tile((tile%scaleFactor)*self.unitSize, (tile/scaleFactor)*self.unitSize+titleHeight, self.unitSize))
